@@ -2,6 +2,7 @@ import serial #load library for read serial data from arduino
 import pymysql.cursors #load library for connect to databases mysql
 from tabulate import tabulate #import library for print result query on Table
 from datetime import date #import date
+from datetime import datetime #import date time
 import hashlib #import hashlib
 
 #connect to databases mysql
@@ -44,7 +45,12 @@ def save_new_book(data):
         with connection.cursor() as cursor:
             sql = "INSERT INTO `book_master` (`id_rfid`, `book_title`, `author`,`publisher`,`editor`,`year`,`description`,`price`,`input_date`,`book_status`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(sql,data )
-        connection.commit()
+            connection.commit()
+            sekarang = datetime.today()
+            reg_time=sekarang.strftime('%Y-%m-%d %H:%M:%S')
+            reg_card="INSERT INTO card (rfid_id,reg_time, use_for) VALUES (%s, %s, %s )"
+            cursor.execute(reg_card,(data[0],reg_time,"book"))
+            connection.commit()
         print("New Data has been save !!!!")
 
         with connection.cursor() as cursor:
@@ -69,8 +75,13 @@ def save_new_member(data_member):
         with connection.cursor() as cursor:
             sql = "INSERT INTO `user_master` (`id_rfid`,`username`,`email`,`password`,`first_name`,`last_name`,`phone`,`gender`,`birthday`,`register_date`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(sql,data_member)
-        connection.commit()
-        print("New Data has been save !!!!")
+            connection.commit()
+            sekarang = datetime.today()
+            reg_time=sekarang.strftime('%Y-%m-%d %H:%M:%S')
+            reg_card="INSERT INTO card (rfid_id,reg_time, use_for) VALUES (%s, %s, %s )"
+            cursor.execute(reg_card,(data_member[0],reg_time,"member"))
+            connection.commit()
+            print("New Data has been save !!!!")
 
         with connection.cursor() as cursor:
             # Read a single record
